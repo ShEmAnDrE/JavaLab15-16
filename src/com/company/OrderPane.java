@@ -2,62 +2,59 @@ package com.company;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class OrderPane extends JTabbedPane {
-    private int tNum;
+    private int tableNum;
     public OrderPane(int tNum){
-        this.tNum = tNum;
+        this.tableNum = tNum;
         this.setTabPlacement(LEFT);
         addOrderTab();
-        this.addChangeListener(e->{
-            if(this.getSelectedIndex() == this.getTabCount()-1){
+        this.addChangeListener(e-> {
+            if(this.getSelectedIndex() == this.getTabCount()-1) {
                 addOrderTab();
             }
         });
-
     }
 
-    public static class MenuItemPanel extends JPanel{
+    public static class MenuItemPanel extends JPanel {
         private JComboBox<String> comboBox;
         private JComboBox<DrinkTypeEnum> drinkType;
         private JTextField textField, name, desc, cost;
         private JPanel menuPanel;
 
-        public String [] getData(){
-            var s = new String[menuPanel.getComponentCount()==12?5:3];
-            s[0] = name.getText();
-            s[1] = desc.getText();
-            s[2] = cost.getText();
-            if(s.length == 5){
-                s[3] = ((JTextField) menuPanel.getComponent(menuPanel.getComponentCount()-1)).getText();
-                s[4] = ((JComboBox) menuPanel.getComponent(menuPanel.getComponentCount()-3)).getSelectedItem().toString();
+        public String[] getData() {
+            String[] str = new String[menuPanel.getComponentCount()==12?5:3];
+            str[0] = name.getText();
+            str[1] = desc.getText();
+            str[2] = cost.getText();
+            if(str.length == 5){
+                str[3] = ((JTextField) menuPanel.getComponent(menuPanel.getComponentCount()-1)).getText();
+                str[4] = Objects.requireNonNull(((JComboBox) menuPanel.getComponent(menuPanel.getComponentCount() - 3)).getSelectedItem()).toString();
             }
-            return s;
+            return str;
         }
 
-        MenuItemPanel(int tNum){
-
+        MenuItemPanel(int tNum) {
             menuPanel = new JPanel();
-
-            comboBox = new JComboBox<>(new String[]{
-                    "Блюдо", "Напиток"
-            });
+            comboBox = new JComboBox<>(new String[]{"Блюдо", "Напиток"});
             comboBox.addItemListener(e->{
                 if(comboBox.getSelectedIndex() == 1 && drinkType == null){
                     drinkType = new JComboBox<>(DrinkTypeEnum.values());
-                    JLabel l = new JLabel("Тип напитка: ");
-                    l.setLabelFor(drinkType);
+                    JLabel label = new JLabel("Тип напитка: ");
+                    label.setLabelFor(drinkType);
                     textField = new JTextField();
-                    var l2 = new JLabel("Алкоголь: ");
-                    l2.setLabelFor(textField);
+                    var labelAlc = new JLabel("Алкоголь: ");
+                    labelAlc.setLabelFor(textField);
 
-                    menuPanel.add(l);
+                    menuPanel.add(label);
                     menuPanel.add(drinkType);
-                    menuPanel.add(l2);
+                    menuPanel.add(labelAlc);
                     menuPanel.add(textField);
-                }else if(comboBox.getSelectedIndex() != 1 && drinkType != null){
-                    for(int i = 0; i < 4; i++)
-                        menuPanel.remove(menuPanel.getComponentCount()-1);
+                } else if(comboBox.getSelectedIndex() != 1 && drinkType != null) {
+                    for(int i = 0; i < 4; i++) {
+                        menuPanel.remove(menuPanel.getComponentCount() - 1);
+                    }
                     drinkType = null;
                     textField = null;
                 }
@@ -91,18 +88,16 @@ public class OrderPane extends JTabbedPane {
                 var add = new JButton("Добавить в заказ");
                 add.addActionListener(e-> Controller.getInstance().addToOrder(getData(), tNum));
                 this.add(add, BorderLayout.SOUTH);
-
             }
         }
     }
 
     private void addOrderTab(){
-        if(this.getTabCount()>0) {
+        if(this.getTabCount() > 0) {
             this.setSelectedIndex(0);
-            removeTabAt(getTabCount()-1);
+            removeTabAt(getTabCount() - 1);
         }
-        this.addTab("Элемент " + (this.getTabCount()+1), new MenuItemPanel(tNum));
-
+        this.addTab("Элемент " + (this.getTabCount() + 1), new MenuItemPanel(tableNum));
         this.addTab("+", new JPanel());
 
     }

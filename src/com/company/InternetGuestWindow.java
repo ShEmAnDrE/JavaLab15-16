@@ -3,20 +3,20 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 
-public class InternetUserWindow extends JFrame {
+public class InternetGuestWindow extends JFrame {
 
-    public InternetUserWindow(){
+    public InternetGuestWindow(){
         super("Окно для интернет заказа");
         setSize(640, 480);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
 
-        var op = new OrderPane(-1);
-        getContentPane().add(op, BorderLayout.CENTER);
+        var orderPane = new OrderPane(-1);
+        getContentPane().add(orderPane, BorderLayout.CENTER);
         var save = new JButton("Сохранить");
         save.addActionListener(e->{
-            String [][] ord = new String[op.getTabCount()-1][];
-            for(int i = 0; i < op.getTabCount()-1; i++){
-                ord[i] = ((OrderPane.MenuItemPanel)op.getComponentAt(i)).getData();
+            String [][] ord = new String[orderPane.getTabCount()-1][];
+            for(int i = 0; i < orderPane.getTabCount() - 1; i++){
+                ord[i] = ((OrderPane.MenuItemPanel)orderPane.getComponentAt(i)).getData();
             }
             Controller.getInstance().addOrder(ord);
         });

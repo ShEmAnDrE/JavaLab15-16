@@ -3,9 +3,9 @@ package com.company;
 import javax.swing.*;
 
 public class Controller implements Runnable{
-    private KitchenWindow kitchenWindow;
-    private InternetUserWindow internetUserWindow;
-    private WaitersWindow waitersWindow;
+    private CafeWindow cafeWindow;
+    private InternetGuestWindow internetGuestWindow;
+    private GuestsWindow guestsWindow;
 
     private InternetOrderManager internetOrderManager;
     private TableOrderManager tableOrderManager;
@@ -15,12 +15,12 @@ public class Controller implements Runnable{
         tableOrderManager = new TableOrderManager();
         internetOrderManager = new InternetOrderManager();
 
-        kitchenWindow = new KitchenWindow(32);
-        kitchenWindow.setVisible(true);
-        internetUserWindow = new InternetUserWindow();
-        internetUserWindow.setVisible(true);
-        waitersWindow = new WaitersWindow();
-        waitersWindow.setVisible(true);
+        cafeWindow = new CafeWindow(32);
+        cafeWindow.setVisible(true);
+        internetGuestWindow = new InternetGuestWindow();
+        internetGuestWindow.setVisible(true);
+        guestsWindow = new GuestsWindow();
+        guestsWindow.setVisible(true);
         new Thread(this).start();
     }
 
@@ -33,9 +33,8 @@ public class Controller implements Runnable{
         try{
             tableOrderManager.add(tableOrder, tNum);
         }catch (IllegalArgumentException e){
-            JOptionPane.showMessageDialog(waitersWindow, e.getMessage(), "Ошибка номера столика!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(guestsWindow, e.getMessage(), "Ошибка номера столика!", JOptionPane.WARNING_MESSAGE);
         }
-        kitchenWindow.notifyTableOrderAdded(tNum);
     }
 
     public void addToOrder(String[] arr, int tNum){
@@ -45,13 +44,13 @@ public class Controller implements Runnable{
                 mi = new Dish(arr[0], arr[1], Double.parseDouble(arr[2]));
             else mi = new Drink(arr[0], arr[1], Double.parseDouble(arr[2]), Double.parseDouble(arr[3]), DrinkTypeEnum.valueOf(arr[4]));
         }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(waitersWindow, "Ошибка ввода числа:\n"+e.getMessage(), "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(guestsWindow, "Ошибка ввода числа:\n"+e.getMessage(), "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try{
             tableOrderManager.addItem(mi, tNum);
         }catch (AlcoholForNotMatureCustomerException e){
-            JOptionPane.showMessageDialog(waitersWindow, e.getMessage(), "Алкоголь нельзя!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(guestsWindow, e.getMessage(), "Алкоголь нельзя!", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -63,11 +62,11 @@ public class Controller implements Runnable{
                     items[i] = new Dish(ord[i][0], ord[i][1], Double.parseDouble(ord[i][2]));
                 else items[i] = new Drink(ord[i][0], ord[i][1], Double.parseDouble(ord[i][2]), Double.parseDouble(ord[i][3]), DrinkTypeEnum.valueOf(ord[i][4]));
             }catch (NumberFormatException e){
-                JOptionPane.showMessageDialog(internetUserWindow, "В элементе заказа номер "+ (i+1)+ " введено некорректное число.");
+                JOptionPane.showMessageDialog(internetGuestWindow, "В элементе заказа номер " + (i + 1) + " введено некорректное число.");
                 return;
             }
         }
-        String[] c = internetUserWindow.askCustomer();
+        String[] c = internetGuestWindow.askCustomer();
         Customer cast;
         try{
             cast = new Customer(
@@ -75,19 +74,19 @@ public class Controller implements Runnable{
                     new Address(c[3], Integer.parseInt(c[4]), c[5], Integer.parseInt(c[6]), c[7].charAt(0), Integer.parseInt(c[8]))
             );
         }catch (NumberFormatException e){
-            JOptionPane.showMessageDialog(internetUserWindow, "Вы ввели некорректное число. Повторите попытку позже.");
+            JOptionPane.showMessageDialog(internetGuestWindow, "Вы ввели некорректное число. Повторите попытку позже.");
             return;
         }
         InternetOrder io;
         try{
             io = new InternetOrder(items, cast);
         }catch (AlcoholForNotMatureCustomerException e){
-            JOptionPane.showMessageDialog(internetUserWindow, e.getMessage());
+            JOptionPane.showMessageDialog(internetGuestWindow, e.getMessage());
             return;
         }
         internetOrderManager.add(io);
-        if(internetOrderManager.ordersQuantity() == 1) kitchenWindow.setIntOrder(internetOrderManager.order());
-        JOptionPane.showMessageDialog(internetUserWindow, "Заказ поставлен в очередь обработки!");
+        if(internetOrderManager.ordersQuantity() == 1) cafeWindow.setIntOrder(internetOrderManager.order());
+        JOptionPane.showMessageDialog(internetGuestWindow, "Заказ поставлен в очередь обработки!");
     }
 
     public Order getOrder(int tableNum){
@@ -95,19 +94,19 @@ public class Controller implements Runnable{
     }
     public void removeOrder(int tNum){
         tableOrderManager.remove(tNum);
-        waitersWindow.onRemovedOrder(tNum);
-        kitchenWindow.onRemoveOrder(tNum);
+        guestsWindow.onRemovedOrder(tNum);
+        cafeWindow.onRemoveOrder(tNum);
     }
     public void removeOrder(){
         try {
             internetOrderManager.remove();
         }catch (EmptyOrderListException e){
-            JOptionPane.showMessageDialog(kitchenWindow, "В очереди нет заказов!");
+            JOptionPane.showMessageDialog(cafeWindow, "В очереди нет заказов!");
         }
         try{
-            kitchenWindow.setIntOrder(internetOrderManager.order());
+            cafeWindow.setIntOrder(internetOrderManager.order());
         }catch (EmptyOrderListException e){
-            kitchenWindow.setIntOrder(null);
+            cafeWindow.setIntOrder(null);
         }
     }
 
@@ -119,9 +118,9 @@ public class Controller implements Runnable{
     @Override
     public void run() {
         while (true) {
-            if (!kitchenWindow.isVisible() && !internetUserWindow.isVisible() && !waitersWindow.isVisible())
+            if (!cafeWindow.isVisible() && !internetGuestWindow.isVisible() && !guestsWindow.isVisible())
                 System.exit(0);
-            kitchenWindow.updateDataLabel(tableOrderManager.ordersQuantity(), internetOrderManager.ordersQuantity());
+            cafeWindow.updateDataLabel(tableOrderManager.ordersQuantity(), internetOrderManager.ordersQuantity());
         }
     }
 

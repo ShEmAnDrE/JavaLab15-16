@@ -7,14 +7,14 @@ public class OrderUI extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         var items = order.getItems();
         for (var item : items) {
-            JLabel l = new JLabel(item.getName() + "\t: " + order.itemQuantity(item));
-            StringBuilder sb = new StringBuilder();
+            JLabel label = new JLabel(item.getName() + "\t: " + order.itemQuantity(item));
+            StringBuilder stringBuilder = new StringBuilder();
             if (item instanceof Drink) {
-                sb.append("Тип: ").append(((Drink) item).getType()).append("\nАлкоголя: ").append(((Drink) item).getAlcoholVol()).append("\n");
+                stringBuilder.append("Тип: ").append(((Drink) item).getType()).append("\nАлкоголя: ").append(((Drink) item).getAlcoholVol()).append("\n");
             }
-            sb.append(item.getDescription());
-            l.setToolTipText(sb.toString());
-            add(l);
+            stringBuilder.append(item.getDescription());
+            label.setToolTipText(stringBuilder.toString());
+            add(label);
         }
     }
 }

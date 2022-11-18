@@ -3,11 +3,11 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 
-public class WaitersWindow extends JFrame {
+public class GuestsWindow extends JFrame {
 
     private JTabbedPane wTables;
 
-    public WaitersWindow(){
+    public GuestsWindow(){
         super("Окно для гостя в кафе");
         setSize(860, 320);
         setDefaultCloseOperation(HIDE_ON_CLOSE);

@@ -4,12 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
-public class KitchenWindow extends JFrame {
+public class CafeWindow extends JFrame {
 
     private JLabel summaryLabel;
     private JPanel tablesOrders;
 
-    public KitchenWindow(int tablesCount){
+    public CafeWindow(int tablesCount){
         super("Все заказы кафе");
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         setSize(480, 480);
@@ -43,32 +43,29 @@ public class KitchenWindow extends JFrame {
             tablesOrders.add(b);
         }
 
-        var sp = new JScrollPane(tablesOrders);
+        var scrollPane = new JScrollPane(tablesOrders);
         getContentPane().add(summaryLabel, BorderLayout.NORTH);
-        getContentPane().add(sp, BorderLayout.WEST);
-        JPanel p = new JPanel();
-        JButton b = new JButton("Выполнить");
-        b.addActionListener(e->Controller.getInstance().removeOrder());
-        getContentPane().add(p);
+        getContentPane().add(scrollPane, BorderLayout.WEST);
+        JPanel panel = new JPanel();
+        JButton button = new JButton("Выполнить");
+        button.addActionListener(e->Controller.getInstance().removeOrder());
+        getContentPane().add(panel);
         setIntOrder(null);
-        p.add(b);
+        panel.add(button);
+        setJMenuBar(new GeneralMenu(this, new JMenu[0]));
     }
 
-    public void updateDataLabel(int t, int i){
-        summaryLabel.setText("Заказов в ресторане: " + t + ", заказов через интернет: " + i);
+    public void updateDataLabel(int table, int internet){
+        summaryLabel.setText("Заказов в ресторане: " + table + ", заказов через интернет: " + internet);
     }
 
-    public void notifyTableOrderAdded(int num){
-        ((JButton)tablesOrders.getComponent(num)).setIcon(new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Users/andreyshemchuk/Documents/JavaDocuments/hasOrder.png"))));
-    }
-
-    public void setIntOrder(Order o){
+    public void setIntOrder(Order order){
         if(((JPanel)getContentPane().getComponent(2)).getComponentCount() > 0)
             ((JPanel)getContentPane().getComponent(2)).remove(0);
-        if(o == null) {
+        if(order == null) {
             ((JPanel)getContentPane().getComponent(2)).add(new JLabel("Интернет заказов пока нет!"), 0);
         }else{
-            ((JPanel)getContentPane().getComponent(2)).add(new OrderUI(o), 0);
+            ((JPanel)getContentPane().getComponent(2)).add(new OrderUI(order), 0);
         }
     }
 
